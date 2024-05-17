@@ -35,7 +35,7 @@ class VehicleModel:
     self.aF: float = CP.centerToFront
     self.aR: float = CP.wheelbase - CP.centerToFront
     self.chi: float = CP.steerRatioRear
-    self.sr: float = CP.steerRatio
+    self.sR: float = CP.steerRatio
 
     self.cF_orig: float = CP.tireStiffnessFront
     self.cR_orig: float = CP.tireStiffnessRear
