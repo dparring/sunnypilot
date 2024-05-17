@@ -66,10 +66,10 @@ class CarInterface(CarInterfaceBase):
 
     # Ram
     elif candidate == CAR.RAM_1500:
-      ret.steerActuatorDelay = 0.2
-      ret.wheelbase = 3.88
-      ret.steerRatio = 16.3
-      ret.mass = 2493.
+      ret.steerActuatorDelay = 0.1
+      ret.wheelbase = 3.68
+      ret.steerRatio = 17.5
+      ret.mass = 3039.
       ret.minSteerSpeed = 0.5
       ret.minEnableSpeed = 14.5
       if any(fw.ecu == 'eps' and fw.fwVersion in (b"68273275AF", b"68273275AG", b"68312176AE", b"68312176AG",) for fw in car_fw):
@@ -92,7 +92,7 @@ class CarInterface(CarInterfaceBase):
       # TODO: Durango 2020 may be able to steer to zero once above 38 kph
       ret.minSteerSpeed = 17.5  # m/s 17 on the way up, 13 on the way down once engaged.
 
-    ret.centerToFront = ret.wheelbase * 0.44
+    ret.centerToFront = ret.wheelbase * 0.5
     ret.enableBsm = 720 in fingerprint[0]
 
     if 0x4FF in fingerprint[0]:
