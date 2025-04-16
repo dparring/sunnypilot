@@ -34,6 +34,7 @@ class VehicleModel:
     self.aF: float = CP.centerToFront
     self.aR: float = CP.wheelbase - CP.centerToFront
     self.chi: float = CP.steerRatioRear
+    self.sR: float = CP.steerRatio
 
     self.cF_orig: float = CP.tireStiffnessFront
     self.cR_orig: float = CP.tireStiffnessRear
@@ -43,7 +44,7 @@ class VehicleModel:
     """Update the vehicle model with a new stiffness factor and steer ratio"""
     self.cF: float = stiffness_factor * self.cF_orig
     self.cR: float = stiffness_factor * self.cR_orig
-    self.sR: float = steer_ratio
+    #disable self.sR: float = steer_ratio
 
   def steady_state_sol(self, sa: float, u: float, roll: float) -> np.ndarray:
     """Returns the steady state solution.
