@@ -1,7 +1,7 @@
 from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from opendbc.car import Bus, create_button_events, structs
-from opendbc.car.chrysler.values import DBC, STEER_THRESHOLD, RAM_CARS
+from opendbc.car.chrysler.values import DBC, STEER_THRESHOLD, RAM_CARS, ChryslerFlags
 from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.interfaces import CarStateBase
 
@@ -28,6 +28,9 @@ class CarState(CarStateBase, MadsCarState):
 
     self.distance_button = 0
 
+    self.cruise_btns = "CRUISE_BUTTONS_ALT" if CP.flags & ChryslerFlags.RAM_HD_ALT_BUTTONS else \
+                       "CRUISE_BUTTONS"
+
   def update(self, can_parsers) -> tuple[structs.CarState, structs.CarStateSP]:
     cp = can_parsers[Bus.pt]
     cp_cam = can_parsers[Bus.cam]
@@ -36,7 +39,7 @@ class CarState(CarStateBase, MadsCarState):
     ret_sp = structs.CarStateSP()
 
     prev_distance_button = self.distance_button
-    self.distance_button = cp.vl["CRUISE_BUTTONS"]["ACC_Distance_Dec"]
+    self.distance_button = cp.vl[self.cruise_btns]["ACC_Distance_Dec"]
 
     # lock info
     ret.doorOpen = any([cp.vl["BCM_1"]["DOOR_OPEN_FL"],
@@ -106,7 +109,7 @@ class CarState(CarStateBase, MadsCarState):
       ret.rightBlindspot = cp.vl["BSM_1"]["RIGHT_STATUS"] == 1
 
     self.lkas_car_model = cp_cam.vl["DAS_6"]["CAR_MODEL"]
-    self.button_counter = cp.vl["CRUISE_BUTTONS"]["COUNTER"]
+    self.button_counter = cp.vl[self.cruise_btns]["COUNTER"]
 
     MadsCarState.update_mads(self, ret, can_parsers)
 
@@ -125,8 +128,7 @@ class CarState(CarStateBase, MadsCarState):
     ]
     return messages
 
-  @staticmethod
-  def get_can_parsers(CP, CP_SP):
+  def get_can_parsers(self, CP, CP_SP):
     pt_messages = [
       # sig_address, frequency
       ("ESP_1", 50),
@@ -134,7 +136,7 @@ class CarState(CarStateBase, MadsCarState):
       ("ESP_6", 50),
       ("STEERING", 100),
       ("ECM_5", 50),
-      ("CRUISE_BUTTONS", 50),
+      (self.cruise_btns, 50),
       ("STEERING_LEVERS", 10),
       ("ORC_1", 2),
       ("BCM_1", 1),
